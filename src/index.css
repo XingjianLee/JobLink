@@ -1,0 +1,322 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* JobLink Design System - 求职招聘平台 */
+
+@layer base {
+  :root {
+    /* 主色调 - 深邃蓝（专业、可信） */
+    --primary: 217 91% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 217 91% 38%;
+    
+    /* 强调色 - 翠绿色（成长、机会） */
+    --accent: 158 64% 42%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 158 64% 35%;
+    
+    /* 背景与前景 */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    
+    /* 卡片 */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --card-hover: 210 20% 96%;
+    
+    /* 弹出层 */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    /* 次要色 */
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 222 47% 25%;
+    
+    /* 静音色 */
+    --muted: 210 15% 92%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* 破坏性操作 */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* 警告色 */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* 成功色 */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    /* 边框与输入 */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 45%;
+    
+    --radius: 0.75rem;
+    
+    /* 渐变 */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 45%) 0%, hsl(230 80% 55%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(158 64% 42%) 0%, hsl(172 60% 45%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(217 91% 45% / 0.08) 0%, hsl(210 20% 98%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
+    
+    /* 阴影 */
+    --shadow-sm: 0 1px 2px hsl(217 91% 45% / 0.04);
+    --shadow-md: 0 4px 12px hsl(217 91% 45% / 0.08);
+    --shadow-lg: 0 8px 24px hsl(217 91% 45% / 0.12);
+    --shadow-glow: 0 0 40px hsl(217 91% 45% / 0.2);
+    
+    /* 侧边栏 */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 217 91% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 91% 45%;
+  }
+
+  .dark {
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --primary-hover: 217 91% 55%;
+    
+    --accent: 158 64% 52%;
+    --accent-foreground: 222 47% 11%;
+    --accent-hover: 158 64% 45%;
+    
+    --background: 222 47% 8%;
+    --foreground: 210 20% 98%;
+    
+    --card: 222 47% 11%;
+    --card-foreground: 210 20% 98%;
+    --card-hover: 222 47% 14%;
+    
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 20% 98%;
+    
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 20% 90%;
+    
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 55%;
+    --warning-foreground: 222 47% 11%;
+    
+    --success: 142 71% 50%;
+    --success-foreground: 222 47% 11%;
+    
+    --border: 217 32% 20%;
+    --input: 217 32% 20%;
+    --ring: 217 91% 60%;
+    
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 55%) 0%, hsl(230 80% 60%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(158 64% 50%) 0%, hsl(172 60% 52%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(217 91% 55% / 0.15) 0%, hsl(222 47% 8%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(222 47% 12%) 0%, hsl(222 47% 10%) 100%);
+    
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.2);
+    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.3);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.3);
+    
+    --sidebar-background: 222 47% 10%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217 32% 17%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 217 32% 20%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* 卡片悬停效果 */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* 渐变文字 */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+  
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-accent);
+  }
+  
+  /* 渐变背景按钮 */
+  .btn-gradient {
+    background-image: var(--gradient-primary);
+    @apply text-primary-foreground shadow-md transition-all duration-300;
+  }
+  
+  .btn-gradient:hover {
+    @apply shadow-lg scale-[1.02];
+    filter: brightness(1.1);
+  }
+  
+  .btn-gradient-accent {
+    background-image: var(--gradient-accent);
+    @apply text-accent-foreground shadow-md transition-all duration-300;
+  }
+  
+  .btn-gradient-accent:hover {
+    @apply shadow-lg scale-[1.02];
+    filter: brightness(1.1);
+  }
+  
+  /* Hero 区域背景 */
+  .hero-bg {
+    background: var(--gradient-hero);
+  }
+  
+  /* 玻璃态效果 */
+  .glass {
+    @apply bg-card/80 backdrop-blur-md border border-border/50;
+  }
+  
+  /* 标签样式 */
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary text-secondary-foreground;
+  }
+  
+  .tag-primary {
+    @apply bg-primary/10 text-primary;
+  }
+  
+  .tag-accent {
+    @apply bg-accent/10 text-accent;
+  }
+  
+  /* 状态指示器 */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+  
+  .status-active {
+    @apply bg-success animate-pulse;
+  }
+  
+  .status-pending {
+    @apply bg-warning;
+  }
+  
+  .status-inactive {
+    @apply bg-muted-foreground;
+  }
+  
+  /* 搜索框样式 */
+  .search-input {
+    @apply w-full h-14 px-6 rounded-xl bg-card border-2 border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300;
+  }
+  
+  /* 导航链接 */
+  .nav-link {
+    @apply relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200;
+  }
+  
+  .nav-link::after {
+    @apply content-[''] absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-300 -translate-x-1/2;
+  }
+  
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full;
+  }
+  
+  .nav-link.active {
+    @apply text-primary;
+  }
+}
+
+@layer utilities {
+  /* 动画 */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+  
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideDown {
+    from { 
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes scaleIn {
+    from { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* 延迟动画 */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+}
