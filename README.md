@@ -113,8 +113,10 @@ JobLink/
 
 ```env
 VITE_SUPABASE_URL=你的_supabase_url
-VITE_SUPABASE_ANON_KEY=你的_supabase_anon_key
+VITE_SUPABASE_PUBLISHABLE_KEY=你的_supabase_anon_key
 ```
+
+注意：变量名是 `VITE_SUPABASE_PUBLISHABLE_KEY`，不是 `VITE_SUPABASE_ANON_KEY`。
 
 ### 数据库迁移
 
