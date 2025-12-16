@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Briefcase, User, Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft, Briefcase, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const REMEMBER_EMAIL_KEY = "joblink_jobseeker_email";
 
@@ -133,11 +133,31 @@ export default function JobseekerAuth() {
 
         // Verify user role is jobseeker
         if (data.user) {
-          const { data: roleData } = await supabase
+          const { data: roleData, error: roleQueryError } = await supabase
             .from("user_roles")
             .select("role")
             .eq("user_id", data.user.id)
             .maybeSingle();
+
+          if (roleQueryError) {
+            console.error("Failed to query user role:", roleQueryError);
+            throw new Error("查询用户角色失败，请稍后重试。");
+          }
+
+          // 如果还没有角色记录，自动为此账号创建 jobseeker 角色
+          if (!roleData?.role) {
+            const { error: insertRoleError } = await supabase
+              .from("user_roles")
+              .insert({
+                user_id: data.user.id,
+                role: "jobseeker",
+              });
+
+            if (insertRoleError) {
+              console.error("Failed to auto create jobseeker role:", insertRoleError);
+              throw new Error("初始化用户角色失败，请联系管理员或稍后重试。");
+            }
+          }
 
           if (roleData?.role !== "jobseeker" && roleData?.role !== "admin") {
             await supabase.auth.signOut();
@@ -177,17 +197,29 @@ export default function JobseekerAuth() {
 
         if (data.user) {
           // Create user role
-          await supabase.from("user_roles").insert({
+          const { error: roleError } = await supabase.from("user_roles").insert({
             user_id: data.user.id,
             role: "jobseeker",
           });
 
+          if (roleError) {
+            console.error("Failed to create user role:", roleError);
+            throw new Error(`创建用户角色失败: ${roleError.message}`);
+          }
+
           // Create jobseeker profile
-          await supabase.from("jobseeker_profiles").insert({
+          const { error: profileError } = await supabase.from("jobseeker_profiles").insert({
             user_id: data.user.id,
             full_name: name,
             email: email,
           });
+
+          if (profileError) {
+            console.error("Failed to create jobseeker profile:", profileError);
+            // 如果创建 profile 失败，尝试删除已创建的角色（可选）
+            await supabase.from("user_roles").delete().eq("user_id", data.user.id);
+            throw new Error(`创建求职者档案失败: ${profileError.message}`);
+          }
 
           toast({
             title: "注册成功",

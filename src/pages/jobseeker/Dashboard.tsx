@@ -1,11 +1,11 @@
+import { UpcomingEventsTimeline } from "@/components/jobseeker/UpcomingEventsTimeline";
+import { JobseekerLayout } from "@/components/layout/JobseekerLayout";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { ArrowRight, Bookmark, Building2, Clock, Eye, Mail, MapPin, Send, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { JobseekerLayout } from "@/components/layout/JobseekerLayout";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Send, Mail, Eye, Bookmark, TrendingUp, ArrowRight, Building2, MapPin, Clock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { UpcomingEventsTimeline } from "@/components/jobseeker/UpcomingEventsTimeline";
 
 interface RecentApplication {
   id: string;
@@ -123,7 +123,8 @@ export default function JobseekerDashboard() {
     setStats({
       applications: appCount || 0,
       invitations: invCount || 0,
-      profileViews: Math.floor(Math.random() * 50) + 10, // Simulated for now
+      // 目前后端还没有“被查看次数”的真实统计字段，这里先固定为 0，避免误导
+      profileViews: 0,
       bookmarks: bookmarkCount || 0
     });
   };
