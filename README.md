@@ -41,7 +41,7 @@ JobLink 是一个双端招聘系统，主要解决两个问题：
 
 ```bash
 # 克隆项目
-git clone <你的仓库地址>
+git clone https://github.com/XingjianLee/JobLink.git
 cd JobLink
 
 # 安装依赖
