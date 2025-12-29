@@ -19,6 +19,7 @@ import JobseekerSearch from "./pages/jobseeker/Search";
 import CareerGuide from "./pages/jobseeker/CareerGuide";
 import JobFairs from "./pages/jobseeker/JobFairs";
 import PartTimeJobs from "./pages/jobseeker/PartTimeJobs";
+import AIAssistant from "./pages/jobseeker/AIAssistant";
 import NotFound from "./pages/NotFound";
 import CompanyDashboard from "./pages/company/Dashboard";
 import CompanyProfile from "./pages/company/Profile";
@@ -52,6 +53,7 @@ const App = () => (
             
             {/* Jobseeker Routes */}
             <Route path="/jobseeker/dashboard" element={<JobseekerDashboard />} />
+            <Route path="/jobseeker/ai-assistant" element={<AIAssistant />} />
             <Route path="/jobseeker/search" element={<JobseekerSearch />} />
             <Route path="/jobseeker/profile" element={<JobseekerProfile />} />
             <Route path="/jobseeker/resume" element={<JobseekerResume />} />

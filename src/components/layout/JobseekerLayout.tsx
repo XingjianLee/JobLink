@@ -15,6 +15,7 @@ import {
   Bell,
   ChevronRight,
   Search,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -308,6 +309,16 @@ export function JobseekerLayout({ children }: DashboardLayoutProps) {
               }`}
             >
               兼职天地
+            </Link>
+            <Link
+              to="/jobseeker/ai-assistant"
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                location.pathname === "/jobseeker/ai-assistant"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              }`}
+            >
+              AI助手
             </Link>
           </nav>
 
