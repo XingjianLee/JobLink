@@ -2,8 +2,9 @@ import { UpcomingEventsTimeline } from "@/components/jobseeker/UpcomingEventsTim
 import { JobseekerLayout } from "@/components/layout/JobseekerLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress"; // 假设你有名为 Progress 的组件，或者可以直接用 div 模拟
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowRight, Bookmark, Building2, Clock, Eye, Mail, MapPin, Send, TrendingUp } from "lucide-react";
+import { ArrowRight, Bookmark, Building2, Clock, Eye, Mail, MapPin, Send, TrendingUp, Sparkles, CheckCircle2, Briefcase, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -86,13 +87,13 @@ export default function JobseekerDashboard() {
       setProfile(profileData);
       setJobseekerId(profileData.id);
       calculateProfileCompletion(profileData);
-      
+
       // Fetch stats
       await fetchStats(profileData.id);
-      
+
       // Fetch recent applications
       await fetchRecentApplications(profileData.id);
-      
+
       // Fetch recent invitations
       await fetchRecentInvitations(profileData.id);
     }
@@ -128,6 +129,46 @@ export default function JobseekerDashboard() {
       bookmarks: bookmarkCount || 0
     });
   };
+
+  const statCards = [
+    {
+      label: "已投递",
+      value: stats.applications,
+      icon: Send,
+      gradient: "from-primary/20 to-primary/5",
+      iconBg: "bg-primary/15",
+      iconColor: "text-primary",
+      link: "/jobseeker/applications",
+    },
+    {
+      label: "收到邀约",
+      value: stats.invitations,
+      icon: Mail,
+      gradient: "from-accent/20 to-accent/5",
+      iconBg: "bg-accent/15",
+      iconColor: "text-accent",
+      link: "/jobseeker/invitations",
+    },
+    {
+      label: "被查看",
+      value: stats.profileViews,
+      icon: Eye,
+      gradient: "from-warning/20 to-warning/5",
+      iconBg: "bg-warning/15",
+      iconColor: "text-warning",
+      link: "/jobseeker/resume",
+    },
+    {
+      label: "已收藏",
+      value: stats.bookmarks,
+      icon: Bookmark,
+      gradient: "from-success/20 to-success/5",
+      iconBg: "bg-success/15",
+      iconColor: "text-success",
+      link: "/jobseeker/bookmarks",
+    },
+  ];
+
 
   const fetchRecentApplications = async (profileId: string) => {
     const { data } = await supabase
@@ -216,7 +257,7 @@ export default function JobseekerDashboard() {
       .from("job_invitations")
       .update({ status: "accepted", responded_at: new Date().toISOString() })
       .eq("id", invitationId);
-    
+
     setRecentInvitations(prev => prev.filter(inv => inv.id !== invitationId));
   };
 
@@ -225,245 +266,396 @@ export default function JobseekerDashboard() {
       .from("job_invitations")
       .update({ status: "rejected", responded_at: new Date().toISOString() })
       .eq("id", invitationId);
-    
+
     setRecentInvitations(prev => prev.filter(inv => inv.id !== invitationId));
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 6) return "凌晨好";
+    if (hour < 12) return "上午好";
+    if (hour < 14) return "中午好";
+    if (hour < 18) return "下午好";
+    return "晚上好";
+  };
+
   return (
-    <JobseekerLayout>
-      <div className="space-y-8">
-        {/* Welcome Section with Profile Completion */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">
-              欢迎回来，{profile?.full_name || "用户"}！
-            </h1>
-            <p className="text-muted-foreground">
-              查看您的求职进度和最新动态
-            </p>
-          </div>
-          {profileCompletion < 100 && (
-            <div className="gap-3 px-4 py-3 bg-primary/10 border border-primary/30 flex items-center rounded-lg shrink-0">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
-                <span className="text-sm font-bold text-primary-foreground">{profileCompletion}%</span>
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium">完善资料可提高曝光</p>
-              </div>
-              <Button size="sm" variant="default" className="shrink-0" asChild>
-                <Link to="/jobseeker/profile">
-                  去完善
-                </Link>
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link to="/jobseeker/applications">
-            <Card className="p-6 cursor-pointer transition-all hover:shadow-md hover:border-primary/30">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Send className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.applications}</p>
-                  <p className="text-sm text-muted-foreground">已投递</p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-
-          <Link to="/jobseeker/invitations">
-            <Card className="p-6 cursor-pointer transition-all hover:shadow-md hover:border-accent/30">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-accent" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.invitations}</p>
-                  <p className="text-sm text-muted-foreground">收到邀约</p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-
-          <Link to="/jobseeker/resume">
-            <Card className="p-6 cursor-pointer transition-all hover:shadow-md hover:border-warning/30">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center">
-                  <Eye className="w-6 h-6 text-warning" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.profileViews}</p>
-                  <p className="text-sm text-muted-foreground">简历被查看</p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-
-          <Link to="/jobseeker/bookmarks">
-            <Card className="p-6 cursor-pointer transition-all hover:shadow-md hover:border-secondary/30">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
-                  <Bookmark className="w-6 h-6 text-secondary-foreground" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.bookmarks}</p>
-                  <p className="text-sm text-muted-foreground">收藏职位</p>
-                </div>
-              </div>
-            </Card>
-          </Link>
-        </div>
-
-        {/* Upcoming Events Timeline */}
-        <UpcomingEventsTimeline />
-
-        {/* Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Applications */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold">最近投递</h3>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/jobseeker/applications">
-                  查看全部
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
+      <JobseekerLayout>
+        <div className="mx-auto max-w-7xl space-y-8 pb-12">
+          {/* Hero Section */}
+          <section
+              className="animate-fade-in relative overflow-hidden rounded-3xl bg-gradient-hero p-8 shadow-large md:p-12"
+              style={{ animationDelay: "0ms" }}
+          >
+            {/* Background decoration */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-accent/10 blur-3xl" />
+              <div className="absolute right-1/4 top-1/2 h-40 w-40 rounded-full bg-primary/5 blur-2xl" />
             </div>
 
-            {recentApplications.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Send className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>暂无投递记录</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentApplications.map(app => (
-                  <div key={app.id} className="flex items-start gap-4 p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors">
-                    <div className="w-10 h-10 rounded-lg bg-card flex items-center justify-center shrink-0">
-                      <Building2 className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium truncate">{app.jobs?.title || "未知职位"}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {app.jobs?.company_profiles?.company_name || "未知企业"}
-                      </p>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {app.jobs?.location || "未知"}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {formatDate(app.applied_at)}
-                        </span>
-                      </div>
-                    </div>
-                    <span className={`px-2 py-1 text-xs font-medium rounded ${statusLabels[app.status || "pending"]?.className || statusLabels.pending.className}`}>
-                      {statusLabels[app.status || "pending"]?.label || "待查看"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
+            <div className="relative z-10 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+              {/* Welcome content */}
+              <div className="max-w-2xl space-y-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 backdrop-blur-md">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">
+                  智能求职助手已上线
+                </span>
+                </div>
 
-          {/* Recent Invitations */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold">企业邀约</h3>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/jobseeker/invitations">
-                  查看全部
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Link>
-              </Button>
-            </div>
+                <h1 className="font-display text-4xl font-black leading-tight tracking-tight md:text-5xl lg:text-6xl">
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  {getGreeting()}，
+                </span>
+                  <br />
+                  <span>{profile?.full_name || "求职者"}</span>
+                </h1>
 
-            {recentInvitations.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Mail className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>暂无待处理邀约</p>
+                <p className="text-lg font-light leading-relaxed md:text-xl">
+                  今天又是充满机遇的一天。我们为您推荐了
+                  <span className="mx-2 text-2xl font-bold ">
+                  {recommendedJobs.length}
+                </span>
+                  个匹配的新职位。
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <Button
+                      size="lg"
+                      className="gap-2 rounded-xl bg-primary font-semibold shadow-lg transition-all hover:shadow-glow"
+                      asChild
+                  >
+                    <Link to="/jobseeker/search">
+                      <Briefcase className="h-5 w-5" />
+                      浏览职位
+                    </Link>
+                  </Button>
+                  <Button
+                      size="lg"
+                      variant="outline"
+                      className="gap-2 rounded-xl border-primary-foreground/20 bg-primary-foreground/5 font-semibold backdrop-blur-sm hover:bg-primary-foreground/10"
+                      asChild
+                  >
+                    <Link to="/jobseeker/profile">
+                      完善资料
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {recentInvitations.map(inv => (
-                  <div key={inv.id} className="p-4 rounded-lg border border-accent/30 bg-accent/5 hover:bg-accent/10 transition-colors">
-                    <div className="flex items-start justify-between mb-2">
+
+              {/* Profile completion card */}
+              {profileCompletion < 100 && (
+                  <Card className="w-full max-w-sm border-primary-foreground/10 bg-primary-foreground/5 p-6 shadow-xl backdrop-blur-xl lg:w-80">
+                    <div className="mb-4 flex items-end justify-between">
                       <div>
-                        <h4 className="font-medium">
-                          {inv.company_profiles?.company_name || "未知企业"}
-                        </h4>
-                        <p className="text-sm text-primary">
-                          {inv.jobs?.title || "未知职位"}
-                        </p>
+                        <p className="text-sm font-medium ">档案完善度</p>
+                        <p className="text-3xl font-black ">{profileCompletion}%</p>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(inv.created_at)}
-                      </span>
+                      <CheckCircle2
+                          className={`h-8 w-8 ${
+                              profileCompletion > 70 ? "text-success" : "text-primary"
+                          }`}
+                      />
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {inv.message || "企业邀请您参加面试"}
-                    </p>
-                    <div className="flex gap-2 mt-3">
-                      <Button size="sm" onClick={() => handleAcceptInvitation(inv.id)}>
-                        接受邀约
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => handleRejectInvitation(inv.id)}>
-                        暂不考虑
-                      </Button>
+
+                    <div className="mb-6 h-2.5 w-full overflow-hidden rounded-full bg-primary-foreground/20">
+                      <div
+                          className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 ease-out"
+                          style={{ width: `${profileCompletion}%` }}
+                      />
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        </div>
 
-        {/* Job Recommendations */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold">职位推荐</h3>
+                    <Button
+                        className="w-full rounded-xl bg-primary-foreground font-semibold text-foreground hover:bg-primary-foreground/90"
+                        asChild
+                    >
+                      <Link to="/jobseeker/profile">立即完善资料</Link>
+                    </Button>
+                  </Card>
+              )}
             </div>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/jobseeker/search">
-                发现更多
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
-            </Button>
-          </div>
+          </section>
 
-          {recommendedJobs.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <TrendingUp className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p>暂无推荐职位</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recommendedJobs.map((job) => (
-                <div key={job.id} className="p-4 rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all cursor-pointer">
-                  <h4 className="font-medium mb-1">{job.title}</h4>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {job.company_profiles?.company_name || "未知企业"}
-                  </p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-primary font-medium">
-                      {formatSalary(job.salary_min, job.salary_max)}
-                    </span>
-                    <span className="text-muted-foreground">{job.location}</span>
+          {/* Stats Grid */}
+          <section className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4">
+            {statCards.map((stat, i) => (
+                <Link
+                    key={stat.label}
+                    to={stat.link}
+                    className="group animate-fade-in-up"
+                    style={{ animationDelay: `${100 + i * 50}ms` }}
+                >
+                  <Card
+                      className={`relative overflow-hidden border-0 bg-gradient-to-br ${stat.gradient} p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-medium md:p-6`}
+                  >
+                    <div className="flex flex-col gap-4">
+                      <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-2xl ${stat.iconBg} transition-transform duration-300 group-hover:scale-110 md:h-14 md:w-14`}
+                      >
+                        <stat.icon className={`h-6 w-6 ${stat.iconColor} md:h-7 md:w-7`} />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black tracking-tight text-foreground md:text-3xl">
+                          {stat.value}
+                        </p>
+                        <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                      </div>
+                    </div>
+
+                    {/* Hover arrow */}
+                    <ArrowRight className="absolute bottom-4 right-4 h-5 w-5 text-muted-foreground/30 transition-all duration-300 group-hover:translate-x-1 group-hover:text-foreground/50" />
+                  </Card>
+                </Link>
+            ))}
+          </section>
+
+          {/* Main Content */}
+          <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
+            {/* Left Column */}
+            <div className="space-y-8 xl:col-span-2">
+              {/* Timeline */}
+              <section
+                  className="animate-fade-in"
+                  style={{ animationDelay: "300ms" }}
+              >
+                <div className="mb-4 flex items-center gap-2 px-1">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <Clock className="h-4 w-4 text-primary" />
                   </div>
+                  <h2 className="text-xl font-bold text-foreground">日程安排</h2>
                 </div>
-              ))}
+                <UpcomingEventsTimeline />
+              </section>
+
+              {/* Recent Activity Grid */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* Recent Applications */}
+                <Card
+                    className="animate-fade-in overflow-hidden border-0 shadow-medium"
+                    style={{ animationDelay: "400ms" }}
+                >
+                  <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-muted/50 to-transparent p-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+                        <Send className="h-4 w-4 text-primary" />
+                      </div>
+                      <h3 className="font-bold text-foreground">最近投递</h3>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="group gap-1 font-semibold text-primary hover:bg-primary/5"
+                        asChild
+                    >
+                      <Link to="/jobseeker/applications">
+                        查看全部
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3 p-4">
+                    {recentApplications.length === 0 ? (
+                        <div className="py-12 text-center">
+                          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                            <Send className="h-7 w-7 text-muted-foreground" />
+                          </div>
+                          <p className="italic text-muted-foreground">暂无投递记录</p>
+                        </div>
+                    ) : (
+                        recentApplications.map((app) => (
+                            <div
+                                key={app.id}
+                                className="group relative flex gap-4 rounded-2xl border border-border/50 bg-background p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-soft"
+                            >
+                              <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-muted">
+                                <Building2 className="h-5 w-5 text-muted-foreground transition-transform duration-300 group-hover:scale-110" />
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <div className="mb-1 flex items-start justify-between gap-2">
+                                  <h4 className="truncate font-semibold text-foreground transition-colors group-hover:text-primary">
+                                    {app.jobs?.title || "未知职位"}
+                                  </h4>
+                                  <span
+                                      className={`flex-shrink-0 rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                                          statusLabels[app.status || "pending"]?.className
+                                      }`}
+                                  >
+                              {statusLabels[app.status || "pending"]?.label}
+                            </span>
+                                </div>
+
+                                <p className="mb-2 text-sm font-medium text-muted-foreground">
+                                  {app.jobs?.company_profiles?.company_name || "未知企业"}
+                                </p>
+
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {app.jobs?.location || "远程"}
+                            </span>
+                                  <span className="ml-auto flex items-center gap-1.5">
+                              <Clock className="h-3.5 w-3.5" />
+                                    {formatDate(app.applied_at)}
+                            </span>
+                                </div>
+                              </div>
+                            </div>
+                        ))
+                    )}
+                  </div>
+                </Card>
+
+                {/* Recent Invitations */}
+                <Card
+                    className="animate-fade-in overflow-hidden border-0 shadow-medium"
+                    style={{ animationDelay: "500ms" }}
+                >
+                  <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-accent/10 to-transparent p-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/15">
+                        <Mail className="h-4 w-4 text-accent" />
+                      </div>
+                      <h3 className="font-bold text-foreground">企业邀约</h3>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="group gap-1 font-semibold text-accent hover:bg-accent/5"
+                        asChild
+                    >
+                      <Link to="/jobseeker/invitations">
+                        更多
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3 p-4">
+                    {recentInvitations.length === 0 ? (
+                        <div className="py-12 text-center">
+                          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                            <Mail className="h-7 w-7 text-muted-foreground" />
+                          </div>
+                          <p className="italic text-muted-foreground">暂无待处理邀约</p>
+                        </div>
+                    ) : (
+                        recentInvitations.map((inv) => (
+                            <div
+                                key={inv.id}
+                                className="relative rounded-2xl border border-accent/20 bg-gradient-to-br from-accent/5 to-transparent p-5 shadow-soft"
+                            >
+                              <div className="mb-3">
+                                <h4 className="font-bold text-foreground">
+                                  {inv.company_profiles?.company_name}
+                                </h4>
+                                <p className="text-sm font-semibold text-accent">{inv.jobs?.title}</p>
+                              </div>
+                              <p className="mb-4 line-clamp-2 text-sm italic text-muted-foreground">
+                                "{inv.message || "我们对您的简历很感兴趣..."}"
+                              </p>
+                              <div className="flex gap-3">
+                                <Button
+                                    size="sm"
+                                    className="flex-1 rounded-xl shadow-sm"
+                                    onClick={() => handleAcceptInvitation(inv.id)}
+                                >
+                                  接受邀约
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="flex-1 rounded-xl"
+                                    onClick={() => handleRejectInvitation(inv.id)}
+                                >
+                                  婉拒
+                                </Button>
+                              </div>
+                            </div>
+                        ))
+                    )}
+                  </div>
+                </Card>
+              </div>
             </div>
-          )}
-        </Card>
-      </div>
-    </JobseekerLayout>
+
+            {/* Right Column - Recommended Jobs */}
+            <div
+                className="animate-slide-in-right space-y-6"
+                style={{ animationDelay: "600ms" }}
+            >
+              <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10">
+                    <TrendingUp className="h-4 w-4 text-warning" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">热门推荐</h3>
+                </div>
+                <Link
+                    to="/jobseeker/search"
+                    className="text-sm font-medium text-primary transition-colors hover:underline"
+                >
+                  查看更多
+                </Link>
+              </div>
+
+              <div className="space-y-4">
+                {recommendedJobs.map((job, index) => (
+                    <Card
+                        key={job.id}
+                        className="group relative overflow-hidden border-0 p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-medium"
+                        style={{ animationDelay: `${700 + index * 100}ms` }}
+                    >
+                      {/* Decorative circle */}
+                      <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-primary/5 transition-transform duration-500 group-hover:scale-150" />
+
+                      <div className="relative z-10">
+                        <div className="mb-1 flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-foreground transition-colors group-hover:text-primary">
+                            {job.title}
+                          </h4>
+                          <Star className="h-4 w-4 flex-shrink-0 text-muted-foreground/30 transition-colors group-hover:text-warning" />
+                        </div>
+                        <p className="mb-4 text-sm font-medium text-muted-foreground">
+                          {job.company_profiles?.company_name}
+                        </p>
+
+                        <div className="flex items-center justify-between border-t border-border/50 pt-4">
+                      <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-lg font-black text-transparent">
+                        {formatSalary(job.salary_min, job.salary_max)}
+                      </span>
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5" />
+                            {job.location}
+                      </span>
+                        </div>
+                      </div>
+                    </Card>
+                ))}
+
+                {/* CTA Card */}
+                <Card className="overflow-hidden border-0 bg-gradient-cool p-6 text-center shadow-lg">
+                  <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-foreground/20">
+                    <Sparkles className="h-6 w-6" />
+                  </div>
+                  <h4 className="mb-2 font-bold">想获得更多机会？</h4>
+                  <p className="mb-4 text-sm">
+                    通过我们的简历诊断工具优化您的简历
+                  </p>
+                  <Button
+                      variant="secondary"
+                      className="w-full rounded-xl font-bold shadow-sm"
+                  >
+                    开始测评
+                  </Button>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </JobseekerLayout>
   );
 }

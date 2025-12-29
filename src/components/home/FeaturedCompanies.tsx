@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Users, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// 模拟数据
 const featuredCompanies = [
   {
     id: "1",
@@ -12,8 +11,9 @@ const featuredCompanies = [
     size: "1000+",
     location: "北京",
     openPositions: 128,
-    logo: "https://cdn.worldvectorlogo.com/logos/tiktok-logo-2-3.svg",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
     description: "激发创造，丰富生活",
+    color: "from-rose/20 to-amber/20",
   },
   {
     id: "2",
@@ -22,8 +22,9 @@ const featuredCompanies = [
     size: "1000+",
     location: "杭州",
     openPositions: 89,
-    logo: "https://cdn.worldvectorlogo.com/logos/taobao-new-flat-design.svg",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop",
     description: "让天下没有难做的生意",
+    color: "from-amber/20 to-emerald/20",
   },
   {
     id: "3",
@@ -32,8 +33,9 @@ const featuredCompanies = [
     size: "1000+",
     location: "深圳",
     openPositions: 156,
-    logo: "https://cdn.worldvectorlogo.com/logos/tencent-qq.svg",
+    image: "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=400&h=300&fit=crop",
     description: "用户为本，科技向善",
+    color: "from-primary/20 to-violet/20",
   },
   {
     id: "4",
@@ -42,88 +44,95 @@ const featuredCompanies = [
     size: "1000+",
     location: "北京",
     openPositions: 67,
-    logo: "https://cdn.worldvectorlogo.com/logos/meituan-deliver.svg",
+    image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=300&fit=crop",
     description: "帮大家吃得更好，生活更好",
+    color: "from-cyan/20 to-primary/20",
   },
 ];
 
 export function FeaturedCompanies() {
   return (
-    <section className="py-16 md:py-24 bg-secondary/30">
-      <div className="container">
-        {/* Section Header */}
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">名企招聘</h2>
-            <p className="text-muted-foreground">优质企业，优质机会</p>
+      <section className="py-20 md:py-28">
+        <div className="container">
+          {/* Section Header */}
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <span className="text-sm font-semibold text-primary mb-2 block">FEATURED COMPANIES</span>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2 text-foreground">名企招聘</h2>
+              <p className="text-muted-foreground">与全球顶尖企业共创未来</p>
+            </div>
+            <Button variant="ghost" className="hidden md:flex group" asChild>
+              <Link to="/companies">
+                查看全部
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
           </div>
-          <Button variant="ghost" className="hidden md:flex" asChild>
-            <Link to="/companies">
-              查看全部
-              <ArrowRight className="w-4 h-4 ml-1" />
-            </Link>
-          </Button>
+
+          {/* Companies Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredCompanies.map((company, index) => (
+                <Card
+                    key={company.id}
+                    className="overflow-hidden card-hover cursor-pointer group border-border/50 bg-card"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {/* Image */}
+                  <div className={`relative h-40 overflow-hidden bg-gradient-to-br ${company.color}`}>
+                    <img
+                        src={company.image}
+                        alt={company.name}
+                        className="w-full h-full object-cover mix-blend-overlay opacity-80 group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors">
+                        {company.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">{company.industry}</p>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {company.description}
+                    </p>
+
+                    {/* Meta Info */}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+                      <div className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {company.location}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        {company.size}人
+                      </div>
+                    </div>
+
+                    {/* Open Positions */}
+                    <div className="flex items-center gap-2 text-primary font-semibold">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Briefcase className="w-4 h-4" />
+                      </div>
+                      <span>{company.openPositions}个在招职位</span>
+                    </div>
+                  </div>
+                </Card>
+            ))}
+          </div>
+
+          {/* Mobile View All Button */}
+          <div className="mt-8 text-center md:hidden">
+            <Button variant="outline" asChild>
+              <Link to="/companies">
+                查看全部企业
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+            </Button>
+          </div>
         </div>
-
-        {/* Companies Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredCompanies.map((company, index) => (
-            <Card
-              key={company.id}
-              className="p-6 card-hover cursor-pointer group text-center"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              {/* Logo */}
-              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-secondary shadow-md group-hover:shadow-lg transition-shadow">
-                <img
-                  src={company.logo}
-                  alt={company.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Name & Industry */}
-              <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
-                {company.name}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3">{company.industry}</p>
-
-              {/* Description */}
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {company.description}
-              </p>
-
-              {/* Meta Info */}
-              <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-4">
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {company.location}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
-                  {company.size}人
-                </div>
-              </div>
-
-              {/* Open Positions */}
-              <div className="flex items-center justify-center gap-1 text-primary font-medium">
-                <Briefcase className="w-4 h-4" />
-                <span>{company.openPositions}个在招职位</span>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Mobile View All Button */}
-        <div className="mt-8 text-center md:hidden">
-          <Button variant="outline" asChild>
-            <Link to="/companies">
-              查看全部企业
-              <ArrowRight className="w-4 h-4 ml-1" />
-            </Link>
-          </Button>
-        </div>
-      </div>
-    </section>
+      </section>
   );
 }
