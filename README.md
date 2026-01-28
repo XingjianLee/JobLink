@@ -105,7 +105,7 @@ JobLink/
 - ✅ 主动邀请候选人
 - ✅ 账户设置
 
-## 开发说明
+## 说明
 
 ### 环境变量
 
@@ -116,66 +116,6 @@ VITE_SUPABASE_URL=你的_supabase_url
 VITE_SUPABASE_PUBLISHABLE_KEY=你的_supabase_anon_key
 VITE_OPENAI_API_KEY=你的_openai_api_key
 ```
-
-注意：
-
-- Supabase 变量名是 `VITE_SUPABASE_PUBLISHABLE_KEY`，不是 `VITE_SUPABASE_ANON_KEY`
-- OpenAI API Key 用于 AI 简历优化功能，如果不配置，代码中会使用默认值（仅用于开发测试）
-- **重要**：`.env.local` 文件已在 `.gitignore` 中，不会被提交到 Git，这是安全的最佳实践
-
-### Vercel 部署
-
-部署到 Vercel 时，需要在 Vercel Dashboard 中配置环境变量，**不需要**提交 `.env` 文件到 Git。
-
-#### 配置步骤：
-
-1. **登录 Vercel Dashboard**
-
-   - 访问 [vercel.com](https://vercel.com)
-   - 导入你的 Git 仓库
-
-2. **配置环境变量**
-
-   - 进入项目设置 → **Environment Variables**
-   - 添加以下环境变量：
-
-   ```
-   VITE_SUPABASE_URL=你的_supabase_url
-   VITE_SUPABASE_PUBLISHABLE_KEY=你的_supabase_anon_key
-   VITE_OPENAI_API_KEY=你的_openai_api_key
-   ```
-
-3. **选择环境**
-
-   - 为每个变量选择适用的环境：**Production**、**Preview**、**Development**
-   - 建议全部勾选，确保所有环境都能正常工作
-
-4. **重新部署**
-   - 配置完成后，Vercel 会自动触发重新部署
-   - 或者手动点击 **Redeploy**
-
-#### 为什么不在 Git 中提交 `.env`？
-
-- ✅ **安全性**：API Key 等敏感信息不会泄露
-- ✅ **灵活性**：不同环境可以使用不同的配置
-- ✅ **最佳实践**：符合行业安全标准
-- ✅ **Vercel 支持**：Vercel 专门提供了环境变量管理界面
-
-### 数据库迁移
-
-项目使用 Supabase 作为后端，数据库结构在 `supabase/migrations/` 目录下。如果需要在本地运行 Supabase：
-
-```bash
-# 安装 Supabase CLI
-npm install -g supabase
-
-# 启动本地 Supabase
-supabase start
-
-# 运行迁移
-supabase db reset
-```
-
 ## 一些细节
 
 - 支持深色/浅色主题切换
